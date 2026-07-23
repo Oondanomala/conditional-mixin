@@ -1,0 +1,62 @@
+plugins {
+	id 'java'
+	id 'idea'
+	id 'eclipse'
+	id 'maven-publish'
+}
+
+archivesBaseName = "conditional-mixin"
+version = "1.0.0-beta.1"
+group = "net.ornithemc"
+
+def ENV = System.getenv()
+if (!ENV.GITHUB_ACTIONS)
+	version = version + "+local"
+
+repositories {
+	maven {
+		name = 'Fabric'
+		url = 'https://maven.fabricmc.net'
+	}
+	mavenCentral()
+}
+
+dependencies {
+	compileOnly "org.apache.logging.log4j:log4j-api:2.19.0"
+
+	compileOnly "net.fabricmc:sponge-mixin:0.17.3+mixin.0.8.7"
+	compileOnly "io.github.llamalad7:mixinextras-fabric:0.5.4"
+
+	implementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
+}
+
+java {
+	toolchain {
+		languageVersion.set(JavaLanguageVersion.of(8))
+	}
+
+	withSourcesJar()
+}
+
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			from components.java
+
+			groupId project.group
+			artifactId project.archivesBaseName
+			version project.version
+		}
+	}
+	repositories {
+		if (ENV.MAVEN_URL) {
+			maven {
+				url ENV.MAVEN_URL
+				credentials {
+					username ENV.MAVEN_USERNAME
+					password ENV.MAVEN_PASSWORD
+				}
+			}
+		}
+	}
+}

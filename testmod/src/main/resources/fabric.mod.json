@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "testmod",
+  "version": "1.0.0",
+
+  "name": "Conditional Mixin Test Mod",
+  "description": "A test mod for Conditional Mixin",
+  "authors": [ "OrnitheMC" ],
+  "contact": {
+    "homepage": "https://github.com/OrnitheMC/conditional-mixin",
+    "sources": "https://github.com/OrnitheMC/conditional-mixin"
+  },
+
+  "license": "MIT",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [ "net.ornithemc.conditionalmixin.testmod.TestMod::init" ]
+  },
+  "mixins": [ "testmod.mixins.json" ],
+
+  "depends": {
+    "fabricloader": ">=0.17.0",
+    "minecraft": "1.14.4"
+  }
+}

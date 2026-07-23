@@ -1,0 +1,28 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.ornithemc.conditionalmixin.testmod.mixin",
+  "plugin": "net.ornithemc.conditionalmixin.mixin.ConditionalMixinPlugin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+  ],
+  "client": [
+    "TestAllOfMods",
+    "TestEmptyConditional",
+    "TestGameSide",
+    "TestMinecraftVersion",
+    "TestMinecraftVersionFriendlyString",
+    "TestModAbsent",
+    "TestModGameSide",
+    "TestModLoaded",
+    "TestModRuntimeEnvironment",
+    "TestModVersion",
+    "TestOneOfMinecraftVersions",
+    "TestOneOfMods",
+    "TestOneOfModVersions",
+    "TestRuntimeEnvironment"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
