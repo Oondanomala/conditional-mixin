@@ -9,6 +9,7 @@
   "client": [
     "TestAllOfMods",
     "TestEmptyConditional",
+    "TestFailedConditional",
     "TestGameSide",
     "TestMinecraftVersion",
     "TestMinecraftVersionFriendlyString",

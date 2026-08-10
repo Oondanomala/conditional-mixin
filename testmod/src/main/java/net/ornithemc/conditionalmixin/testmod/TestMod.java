@@ -32,7 +32,12 @@ public final class TestMod {
 
 		EnumSet<Test> failuresToLog = EnumSet.complementOf(SUCCESSES);
 		failuresToLog.removeAll(FAILURES);
-		failuresToLog.forEach(TestMod::failure);
+		failuresToLog.forEach(test -> {
+			if (test.defaultSuccess)
+				success(test);
+			else
+				failure(test);
+		});
 
 		if (FAILURES.isEmpty()) {
 			LOGGER.info("Conditional Mixin tests finished (all {} succeeded)", SUCCESSES.size());

@@ -3,6 +3,7 @@ package net.ornithemc.conditionalmixin.testmod;
 public enum Test {
 
 	EMPTY_CONDITIONAL,
+	FAILED_CONDITIONAL(true),
 	MINECRAFT_VERSION,
 	MINECRAFT_VERSION_FRIENDLY_STRING,
 	ONE_OF_MINECRAFT_VERSIONS,
@@ -15,6 +16,15 @@ public enum Test {
 	MOD_GAME_SIDE,
 	MOD_RUNTIME_ENVIRONMENT,
 	ONE_OF_MODS,
-	ALL_OF_MODS
+	ALL_OF_MODS;
 
+	public final boolean defaultSuccess;
+
+	private Test() {
+		this(false);
+	}
+
+	private Test(boolean defaultSuccess) {
+		this.defaultSuccess = defaultSuccess;
+	}
 }
