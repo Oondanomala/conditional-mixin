@@ -43,10 +43,6 @@ public final class ModCondition {
 		return mods;
 	}
 
-	public static ModCondition parse(AnnotationNode modCondition) {
-		return parse(modCondition, false);
-	}
-
 	private static ModCondition parse(AnnotationNode modCondition, boolean inverted) {
 		List<String> value = Annotations.getValue(modCondition, "value", Collections.emptyList());
 		List<String> version = Annotations.getValue(modCondition, "version", Collections.emptyList());

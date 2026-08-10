@@ -17,24 +17,15 @@ import net.ornithemc.conditionalmixin.conditional.AnnotationProcessor;
 
 public class ConditionalMixinPlugin implements IMixinConfigPlugin {
 
-	private static ConditionalMixinPlugin instance;
+	private static final AnnotationProcessor PROCESSOR = new AnnotationProcessor();
 
-	private AnnotationProcessor processor;
+	static {
+		ConditionalMixin.LOGGER.info("Initializing Conditional Mixin.");
 
-	public ConditionalMixinPlugin() {
-		// only one instance needs to exist
-		if (instance == null) {
-			ConditionalMixin.LOGGER.info("Initializing Conditional Mixin.");
+		ConditionalMixinTransformer transformer = new ConditionalMixinTransformer(PROCESSOR);
+		ConditionalMixinExtension extension = new ConditionalMixinExtension(transformer);
 
-			instance = this;
-
-			this.processor = new AnnotationProcessor();
-
-			ConditionalMixinTransformer transformer = new ConditionalMixinTransformer(this.processor);
-			ConditionalMixinExtension extension = new ConditionalMixinExtension(transformer);
-
-			MixinInternals.registerExtension(extension);
-		}
+		MixinInternals.registerExtension(extension);
 	}
 
 	@Override
@@ -48,19 +39,17 @@ public class ConditionalMixinPlugin implements IMixinConfigPlugin {
 
 	@Override
 	public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-		if (this.processor != null) {
-			try {
-				ClassNode classNode = MixinService.getService().getBytecodeProvider().getClassNode(mixinClassName);
+		try {
+			ClassNode classNode = MixinService.getService().getBytecodeProvider().getClassNode(mixinClassName);
 
-				if (classNode != null) {
-					return !this.processor.shouldRemove(classNode);
-				}
-			} catch (ClassNotFoundException | IOException e) {
-				throw new RuntimeException(e);
+			if (classNode != null) {
+				return !PROCESSOR.shouldRemove(classNode);
+			} else {
+				throw new ClassNotFoundException(mixinClassName);
 			}
+		} catch (ClassNotFoundException | IOException e) {
+			throw new RuntimeException(e);
 		}
-
-		return true;
 	}
 
 	@Override

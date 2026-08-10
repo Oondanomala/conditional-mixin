@@ -30,7 +30,6 @@ To bootstrap Conditional Mixin, register the provided Mixin config plugin in you
 
 If your project requires its own Mixin config plugin, you can extend the `net.ornithemc.conditionalmixin.mixin.ConditionalMixinPlugin` class to bootstrap Conditional Mixin.
 
-Do note that only one instance of the plugin needs to be registered to take care of bootstrapping. If one of your project's dependencies already registers the plugin, your project does not need to do so.
 # Using the library
 
 The library provides a `@Conditional` annotation that can be used to mark Mixin classes, fields, and methods conditional. The targeted mixin will only be applied if all the conditions defined in the annotation are met.
