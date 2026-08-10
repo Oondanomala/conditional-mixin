@@ -6,7 +6,7 @@ plugins {
 }
 
 archivesBaseName = "conditional-mixin"
-version = "1.0.0-beta.1"
+version = "1.0.0-beta.2"
 group = "net.ornithemc"
 
 def ENV = System.getenv()
