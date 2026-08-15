@@ -134,7 +134,7 @@ The `runtimeEnvironment` field defines the runtime environment (development or p
 
 ```java
 // Mixin class is only applied in Minecraft 13w16a and above.
-@Conditional(minecraftVersion = ">=13w16a")
+@Conditional(minecraftVersion = @Version(">=13w16a"))
 @Mixin(Minecraft.class)
 public class MinecraftMixin {
 
@@ -173,13 +173,13 @@ public class MinecraftMixin {
 	// - The game side that is running is the client.
 	// - The current runtime environment is a development environment.
 	// - Either the runtime environment is not a development environment, or mod 'example' or mod 'anotherexample' is loaded.
-	// - Mod 'yetanotherexample', with a version below 1.2.1 or above 1.2.2, is loaded.
-	// - Mod 'breakingexample', with a version beginning with 1.7 or version 2.0 or above, is not loaded.
+	// - Mod 'yetanotherexample', with version 1.2.1 or above if on the client, or version 1.2.2 or above if on the server, is loaded.
+	// - Mod 'breakingexample', with version below 1.2.0 if in a development environment, or any version otherwise, is not loaded.
 	@Conditional(
-		minecraftVersion = {
+		minecraftVersion = @Version({
 			">1.7.6- <=1.7.10",
 			">=14w08a"
-		},
+		}),
 		gameSide = GameSide.CLIENT,
 		modLoaded = {
 			@Mod(
@@ -192,18 +192,24 @@ public class MinecraftMixin {
 			@Mod(
 				value = "yetanotherexample",
 				version = {
-					"<1.2.1",
-					">1.2.2"
+					@Version(
+						value = ">=1.2.1",
+						gameSide = GameSide.CLIENT
+					),
+					@Version(
+						value = ">=1.2.2",
+						gameSide = GameSide.SERVER
+					)
 				}
 			)
 		},
 		modAbsent = {
 			@Mod(
 				value = "breakingexample",
-				version = {
-					"1.7.x",
-					">=2.0"
-				}
+				version = @Version(
+					value = "<1.2.0",
+					runtimeEnvironment = RuntimeEnvironment.DEVELOPMENT
+				)
 			)
 		}
 	)
