@@ -38,7 +38,7 @@ The library provides a `@Conditional` annotation that can be used to mark Mixin 
 
 `@Conditional` supports the following conditions:
 
-- `minecraftVersion`: defines one or more Minecraft version predicates.
+- `minecraftVersion`: defines one or more Minecraft version conditions.
 - `gameSide`: defines the required game side (`CLIENT`, `SERVER`, or `ANY`).
 - `runtimeEnvironment`: defines the required runtime environment (`DEVELOPMENT`, `PRODUCTION`, or `ANY`).
 - `modLoaded`: defines one or more `@Mod` conditions for mods that must be loaded.
@@ -48,17 +48,7 @@ The `@Conditional` annotation can be used on classes, fields, and methods in the
 
 #### `minecraftVersion`
 
-The `minecraftVersion` field accepts one or more Minecraft version predicates, as a single `String` value or an array of `String` values respectively. Only one of the defined predicates must match the runtime Minecraft version for the condition to be met.
-
-Minecraft version predicates follow the same format as dependency version predicates in your `mod.json`, but also allow for the use of "friendly" version strings as opposed to semantic version strings. The following examples are all valid usages of `minecraftVersion` in `@Conditional`:
-
-```java
-@Conditional(minecraftVersion = "1.7.2")
-@Conditional(minecraftVersion = ">13w41a <1.7")
-@Conditional(minecraftVersion = { "1.7.x", ">=1.9" })
-@Conditional(minecraftVersion = { "<b1.9-pre1", ">1.0.0-rc2" })
-@Conditional(minecraftVersion = { ">=c0.0.11a-launcher <=inf-20100629", ">=a0.1.0 <=a0.2.8" })
-```
+The `minecraftVersion` field accepts one or more `@Version` conditions. All of the specified version conditions must be met.
 
 #### `modLoaded`
 
@@ -73,7 +63,7 @@ The `modAbsent` field accepts one or more `@Mod` conditions for mods that are re
 `@Mod` supports the following conditions:
 
 - `value` (required): defines one or more mod IDs.
-- `version`: defines one or more mod version predicates - must be left empty if more than one mod ID is specified.
+- `version`: defines one or more mod version conditions - must be left empty if more than one mod ID is specified.
 - `gameSide`: defines the required game side (`CLIENT`, `SERVER`, or `ANY`).
 - `runtimeEnvironment`: defines the required runtime environment (`DEVELOPMENT`, `PRODUCTION`, or `ANY`).
 
@@ -84,7 +74,11 @@ The `@Mod` annotation can be used for two conditions:
 
 #### `value`
 
-The `value` field accepts one or more mod IDs, as a single `String` value or an array of `String` values repectively.
+The `value` field accepts one or more mod IDs, as a single `String` value or an array of `String` values repectively. Only one of the defined mod IDs must match a mod that is currently loaded..
+
+### `version`
+
+The `version` field accepts one or more `@Version` conditions. All of the specified version conditions must be met.
 
 #### `gameSide`
 
@@ -93,6 +87,48 @@ The `gameSide` field defines the game side (client or server) on which this mod 
 #### `runtimeEnvironment`
 
 The `runtimeEnvironment` field defines the runtime environment (development or production) in which this mod condition must be met. If the runtime environment does not match, this mod condition is effectively ignored.
+
+## `@Version`
+
+`@Version` supports the following conditions:
+
+- `value` (required): defines one or more version predicates.
+- `gameSide`: defines the required game side (`CLIENT`, `SERVER`, or `ANY`).
+- `runtimeEnvironment`: defines the required runtime environment (`DEVELOPMENT`, `PRODUCTION`, or `ANY`).
+
+
+#### `value`
+
+The `value` field accepts one or more version predicates, as a single `String` value or an array of `String` values . Only one of the defined predicates must match the runtime version for the condition to be met.
+
+Version predicates follow the same format as dependency version predicates in your `mod.json`, meaning the version strings must be Semver 2.0.0 compliant. However, if the `@Version` is used as a `@Conditional` `minecraftVersion`, the use of "friendly" version strings is also allowed.
+
+The following examples are all valid usages of `@Version`:
+
+```java
+@Version("1.0.0")
+@Version(">1.0.0- <1.1")
+@Version({ "1.0.x", ">=1.2" })
+@Version({ "<1.0.0-alpha.1", ">1.0.0-rc.2" })
+```
+
+And the following are all examples of valid usages of `@Version` in `@Conditional` `minecraftVersion`:
+
+```java
+@Version("1.7.2")
+@Version(">13w41a <1.7")
+@Version({ "1.7.x", ">=1.9" })
+@Version({ "<b1.9-pre1", ">1.0.0-rc2" })
+@Version({ ">=c0.0.11a-launcher <=inf-20100629", ">=a0.1.0 <=a0.2.8" })
+```
+
+#### `gameSide`
+
+The `gameSide` field defines the game side (client or server) on which this version condition must be met. If the game side does not match, this version condition is effectively ignored.
+
+#### `runtimeEnvironment`
+
+The `runtimeEnvironment` field defines the runtime environment (development or production) in which this version condition must be met. If the runtime environment does not match, this version condition is effectively ignored.
 
 ## Examples
 

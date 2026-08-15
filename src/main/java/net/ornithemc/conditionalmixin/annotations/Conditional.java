@@ -17,14 +17,16 @@ import java.lang.annotation.Target;
 public @interface Conditional {
 
 	/**
-	 * Specifies one or more Minecraft version predicates for this condition. If any
-	 * one of the specified predicates matches the runtime Minecraft version, this
-	 * condition is met. Leaving this field empty is equivalent to setting the value
-	 * to {@code minecraftVersion = "*"}, i.e. allowing all Minecraft versions.
+	 * Specifies one or more {@linkplain Version} conditions that specify the
+	 * required Minecraft versions for this condition to be met. All of the
+	 * specified version conditions must be met. Leaving this field empty is
+	 * equivalent to setting the value to {@code minecraftVersion = @Version("*")},
+	 * i.e. allowing all Minecraft Versions.
 	 * 
-	 * @return the Minecraft version predicates for this condition.
+	 * @return the Minecraft {@linkplain Version} conditions for required Minecraft
+	 *         .
 	 */
-	String[] minecraftVersion() default {};
+	Version[] minecraftVersion() default {};
 
 	/**
 	 * Specifies the required game side for this condition to be met.
@@ -41,18 +43,18 @@ public @interface Conditional {
 	RuntimeEnvironment runtimeEnvironment() default RuntimeEnvironment.ANY;
 
 	/**
-	 * Specifies one or {@linkplain Mod} conditions for mods that are required to be
-	 * loaded for this condition to be met. All of the specified mod conditions must
-	 * be met.
+	 * Specifies one or more {@linkplain Mod} conditions for mods that are required
+	 * to be loaded for this condition to be met. All of the specified mod
+	 * conditions must be met.
 	 * 
 	 * @return the {@linkplain Mod} conditions for required loaded mods.
 	 */
 	Mod[] modLoaded() default {};
 
 	/**
-	 * Specifies one or {@linkplain Mod} conditions for mods that are required to be
-	 * absent for this condition to be met. All of the specified mod conditions must
-	 * be met.
+	 * Specifies one or more {@linkplain Mod} conditions for mods that are required
+	 * to be absent for this condition to be met. All of the specified mod
+	 * conditions must be met.
 	 * 
 	 * @return the {@linkplain Mod} conditions for required absent mods.
 	 */

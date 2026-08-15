@@ -1,8 +1,5 @@
 package net.ornithemc.conditionalmixin.conditional;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AnnotationNode;
 
@@ -11,8 +8,7 @@ import org.spongepowered.asm.util.Annotations;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.Version;
-import net.fabricmc.loader.api.VersionParsingException;
-import net.fabricmc.loader.api.metadata.version.VersionPredicate;
+
 import net.ornithemc.conditionalmixin.annotations.Conditional;
 import net.ornithemc.conditionalmixin.annotations.GameSide;
 import net.ornithemc.conditionalmixin.annotations.RuntimeEnvironment;
@@ -22,36 +18,24 @@ public final class Condition {
 	public static final String DESCRIPTOR = Type.getDescriptor(Conditional.class);
 
 	public static Condition parse(AnnotationNode condition) {
-		List<String> minecraftVersion = Annotations.getValue(condition, "minecraftVersion", Collections.emptyList());
+		VersionCondition[] minecraftVersion = VersionCondition.getMinecraftVersions(condition);
 		GameSide gameSide = Annotations.getValue(condition, "gameSide", GameSide.class, GameSide.ANY);
 		RuntimeEnvironment runtimeEnvironment = Annotations.getValue(condition, "runtimeEnvironment", RuntimeEnvironment.class, RuntimeEnvironment.ANY);
 		ModCondition[] modsLoaded = ModCondition.getModsLoaded(condition);
 		ModCondition[] modsAbsent = ModCondition.getModsAbsent(condition);
 
-		VersionPredicate[] predicates = new VersionPredicate[minecraftVersion.size()];
-
-		for (int i = 0; i < predicates.length; i++) {
-			String predicate = minecraftVersion.get(i);
-
-			try {
-				predicates[i] = MinecraftVersionPredicateParser.parse(predicate);
-			} catch (VersionParsingException e) {
-				throw new InvalidConditionException("Invalid Minecraft version predicate '" + predicate + "'", e);
-			}
-		}
-
-		return new Condition(CompoundVersionPredicate.or(predicates), gameSide, runtimeEnvironment, modsLoaded, modsAbsent);
+		return new Condition(minecraftVersion, gameSide, runtimeEnvironment, modsLoaded, modsAbsent);
 	}
 
 	private static final Version MINECRAFT_VERSION = FabricLoader.getInstance().getModContainer("minecraft").get().getMetadata().getVersion();
 
-	private final VersionPredicate minecraftVersions;
+	private final VersionCondition[] minecraftVersions;
 	private final GameSide gameSide;
 	private final RuntimeEnvironment runtimeEnvironment;
 	private final ModCondition[] modsLoaded;
 	private final ModCondition[] modsAbsent;
 
-	private Condition(VersionPredicate minecraftVersions, GameSide gameSide, RuntimeEnvironment runtimeEnvironment, ModCondition[] modsLoaded, ModCondition[] modsAbsent) {
+	private Condition(VersionCondition[] minecraftVersions, GameSide gameSide, RuntimeEnvironment runtimeEnvironment, ModCondition[] modsLoaded, ModCondition[] modsAbsent) {
 		this.minecraftVersions = minecraftVersions;
 		this.gameSide = gameSide;
 		this.runtimeEnvironment = runtimeEnvironment;
@@ -68,8 +52,10 @@ public final class Condition {
 			return false;
 		}
 
-		if (!this.minecraftVersions.test(MINECRAFT_VERSION)) {
-			return false;
+		for (VersionCondition minecraftVersion : this.minecraftVersions) {
+			if (!minecraftVersion.test(MINECRAFT_VERSION)) {
+				return false;
+			}
 		}
 
 		for (ModCondition modLoaded : this.modsLoaded) {

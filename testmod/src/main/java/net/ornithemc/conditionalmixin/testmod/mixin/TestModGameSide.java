@@ -10,6 +10,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 
 import net.minecraft.client.Minecraft;
+
 import net.ornithemc.conditionalmixin.annotations.Conditional;
 import net.ornithemc.conditionalmixin.annotations.GameSide;
 import net.ornithemc.conditionalmixin.annotations.Mod;

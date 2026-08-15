@@ -11,6 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.ornithemc.conditionalmixin.annotations.Conditional;
 import net.ornithemc.conditionalmixin.annotations.GameSide;
 import net.ornithemc.conditionalmixin.annotations.Mod;
+import net.ornithemc.conditionalmixin.annotations.Version;
 import net.ornithemc.conditionalmixin.testmod.Test;
 import net.ornithemc.conditionalmixin.testmod.TestMod;
 
@@ -18,7 +19,7 @@ import net.ornithemc.conditionalmixin.testmod.TestMod;
 @Mixin(Minecraft.class)
 public class TestFailedConditional {
 
-	@Conditional(minecraftVersion = "9999.99.9")
+	@Conditional(minecraftVersion = @Version("9999.99.9"))
 	@Shadow
 	private static Minecraft instance;
 

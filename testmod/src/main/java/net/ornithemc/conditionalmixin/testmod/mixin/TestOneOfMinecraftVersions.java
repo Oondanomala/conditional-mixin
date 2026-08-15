@@ -7,23 +7,25 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import net.minecraft.client.Minecraft;
+
 import net.ornithemc.conditionalmixin.annotations.Conditional;
+import net.ornithemc.conditionalmixin.annotations.Version;
 import net.ornithemc.conditionalmixin.testmod.Test;
 import net.ornithemc.conditionalmixin.testmod.TestMod;
 
-@Conditional(minecraftVersion = { "1.14.4", "1.14.x" })
+@Conditional(minecraftVersion = @Version({ "1.14.4", "1.14.x" }))
 @Mixin(Minecraft.class)
 public class TestOneOfMinecraftVersions {
 
-	@Conditional(minecraftVersion = { ">1.14", "<1.0.0" })
+	@Conditional(minecraftVersion = @Version({ ">1.14", "<1.0.0" }))
 	@Shadow
 	private static Minecraft instance;
 
-	@Conditional(minecraftVersion = { ">1.15", "<1.0.0" })
+	@Conditional(minecraftVersion = @Version({ ">1.15", "<1.0.0" }))
 	@Shadow
 	private static boolean thisfielddoesnotexist;
 
-	@Conditional(minecraftVersion = { ">1.15", "1.14.x" })
+	@Conditional(minecraftVersion = @Version({ ">1.15", "1.14.x" }))
 	@Inject(method = "<clinit>", at = @At("HEAD"))
 	private static void clinit(CallbackInfo ci) {
 		boolean success = true;
@@ -50,7 +52,7 @@ public class TestOneOfMinecraftVersions {
 		}
 	}
 
-	@Conditional(minecraftVersion = { ">1.15", "<1.0.0" })
+	@Conditional(minecraftVersion = @Version({ ">1.15", "<1.0.0" }))
 	@Inject(method = "<clinit>", at = @At("HEAD"))
 	private static void clinit2(CallbackInfo ci) {
 		TestMod.failure(Test.ONE_OF_MINECRAFT_VERSIONS);

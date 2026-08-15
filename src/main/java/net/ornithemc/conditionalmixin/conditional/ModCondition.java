@@ -10,10 +10,8 @@ import org.spongepowered.asm.util.Annotations;
 
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
-import net.fabricmc.loader.api.VersionParsingException;
 import net.fabricmc.loader.api.metadata.ModMetadata;
-import net.fabricmc.loader.api.metadata.version.VersionPredicate;
-import net.fabricmc.loader.impl.util.version.VersionPredicateParser;
+
 import net.ornithemc.conditionalmixin.annotations.GameSide;
 import net.ornithemc.conditionalmixin.annotations.RuntimeEnvironment;
 
@@ -45,7 +43,7 @@ public final class ModCondition {
 
 	private static ModCondition parse(AnnotationNode modCondition, boolean inverted) {
 		List<String> value = Annotations.getValue(modCondition, "value", Collections.emptyList());
-		List<String> version = Annotations.getValue(modCondition, "version", Collections.emptyList());
+		VersionCondition[] version = VersionCondition.getModVersions(modCondition);
 		GameSide gameSide = Annotations.getValue(modCondition, "gameSide", GameSide.class, GameSide.ANY);
 		RuntimeEnvironment runtimeEnvironment = Annotations.getValue(modCondition, "runtimeEnvironment", RuntimeEnvironment.class, RuntimeEnvironment.ANY);
 
@@ -54,37 +52,25 @@ public final class ModCondition {
 		}
 
 		if (value.size() > 1) {
-			if (!version.isEmpty()) {
+			if (version.length > 0) {
 				throw new InvalidConditionException("Mod version predicate specified with multiple mod IDs");
 			}
 
 			return new ModCondition(value.toArray(new String[0]), gameSide, runtimeEnvironment, inverted);
 		} else {
-			VersionPredicate[] predicates = new VersionPredicate[version.size()];
-
-			for (int i = 0; i < predicates.length; i++) {
-				String predicate = version.get(i);
-
-				try {
-					predicates[i] = VersionPredicateParser.parse(predicate);
-				} catch (VersionParsingException e) {
-					throw new InvalidConditionException("Invalid Minecraft version predicate '" + predicate + "'", e);
-				}
-			}
-
-			return new ModCondition(value.get(0), CompoundVersionPredicate.or(predicates), gameSide, runtimeEnvironment, inverted);
+			return new ModCondition(value.get(0), version, gameSide, runtimeEnvironment, inverted);
 		}
 	}
 
 	private final String[] ids;
-	private final VersionPredicate version;
+	private final VersionCondition[] versions;
 	private final GameSide gameSide;
 	private final RuntimeEnvironment runtimeEnvironment;
 	private final boolean inverted;
 
-	private ModCondition(String id, VersionPredicate version, GameSide gameSide, RuntimeEnvironment runtimeEnvironment, boolean inverted) {
+	private ModCondition(String id, VersionCondition[] versions, GameSide gameSide, RuntimeEnvironment runtimeEnvironment, boolean inverted) {
 		this.ids = new String[] { id };
-		this.version = version;
+		this.versions = versions;
 		this.gameSide = gameSide;
 		this.runtimeEnvironment = runtimeEnvironment;
 		this.inverted = inverted;
@@ -92,7 +78,7 @@ public final class ModCondition {
 
 	private ModCondition(String[] ids, GameSide gameSide, RuntimeEnvironment runtimeEnvironment, boolean inverted) {
 		this.ids = ids;
-		this.version = VersionPredicateParser.getAny();
+		this.versions = new VersionCondition[0];
 		this.gameSide = gameSide;
 		this.runtimeEnvironment = runtimeEnvironment;
 		this.inverted = inverted;
@@ -105,7 +91,15 @@ public final class ModCondition {
 				Optional<Boolean> present = mod
 						.map(ModContainer::getMetadata)
 						.map(ModMetadata::getVersion)
-						.map(this.version::test);
+						.map(modVersion -> {
+							for (VersionCondition version : this.versions) {
+								if (!version.test(modVersion)) {
+									return false;
+								}
+							}
+
+							return true;
+						});
 
 				if (this.inverted != present.orElse(false)) {
 					return true;

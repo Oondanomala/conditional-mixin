@@ -24,23 +24,21 @@ public @interface Mod {
 	String[] value();
 
 	/**
-	 * Specifies one or more mod version predicates for this mod condition. If any
-	 * one of the specified predicates matches the actually loaded mod version, this
-	 * mod condition is met. Leaving this field empty is equivalent to setting the
-	 * value to {@code version = "*"}, i.e. allowing all mod versions.
+	 * Specifies one or more {@linkplain Version} conditions that specify the
+	 * required mod versions for this condition to be met. All of the specified
+	 * version conditions must be met. Leaving this field empty is equivalent to
+	 * setting the value to {@code version = @Version("*")}, i.e. allowing all mod
+	 * Versions.
 	 * 
-	 * <p>
-	 * This field must be left empty if more than one mod ID is specified.
-	 * 
-	 * @return the mod version predicates for this mod condition.
+	 * @return the {@linkplain Version} conditions for required mod versions.
 	 */
-	String[] version() default {};
+	Version[] version() default {};
 
 	/**
 	 * Specifies the game side in which this mod condition must be met. If the game
 	 * side does not match, this mod condition will always evaluate to {@code true}.
 	 * 
-	 * @return the game side in which this condition must be met.
+	 * @return the game side in which this mod condition must be met.
 	 */
 	GameSide gameSide() default GameSide.ANY;
 
@@ -49,7 +47,7 @@ public @interface Mod {
 	 * the runtime environment does not match, this mod condition will always
 	 * evaluate to {@code true}.
 	 * 
-	 * @return the runtime environment in which this condition must be met.
+	 * @return the runtime environment in which this mod condition must be met.
 	 */
 	RuntimeEnvironment runtimeEnvironment() default RuntimeEnvironment.ANY;
 
